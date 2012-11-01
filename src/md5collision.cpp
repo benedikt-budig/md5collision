@@ -47,7 +47,7 @@ int main() {
 
     // check if the hash equals the given hash
     if (strcmp(hex, hash.c_str()) == 0) {
-      cout << "Success: " << word->word << " results in the given hash." << endl;
+      cout << "Success: " << word->word << " results in the given hash.,";
       stop = true;
     }
 
