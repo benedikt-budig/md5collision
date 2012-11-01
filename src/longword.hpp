@@ -8,6 +8,8 @@
 #ifndef LONGWORD_HPP_
 #define LONGWORD_HPP_
 
+#include <string>
+
 using namespace std;
 
 class Longword {
@@ -17,8 +19,9 @@ public:
   char* word;
   Longword(int);
   ~Longword();
-  Longword* operator ++();
-  Longword* operator +(int);
+  Longword* operator++();
+  Longword* operator+(int);
+  string toString();
 };
 
 

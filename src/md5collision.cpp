@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <execinfo.h>
 #include <openssl/md5.h>
+# include <omp.h>
 #include "longword.hpp"
 
 using namespace std;
@@ -17,9 +18,25 @@ int main() {
   int word_length = 10;
   string hash = "092f2ba9f39fbc2876e64d12cd662f72";
 
-  Longword* word = new Longword(word_length);
+  bool stop = false;
+  Longword* word;
 
-  for (int i = 0; i < 100000000; i++) {
+  #pragma omp parallel private(word)
+  {
+  int num_threads = omp_get_num_threads();
+  bool first = true;
+  for (int i = 0; i < 10000000000000; i++) {
+    if (stop)
+      break;
+
+    if (first) {
+      word = new Longword(word_length);
+      word->operator +(omp_get_thread_num());
+      first = false;
+    }
+
+    //printf("thread %i: %i\n", omp_get_thread_num(), word->word[0]);
+
     // calculate the md5-hash for the current word
     unsigned char md[MD5_DIGEST_LENGTH];
     MD5((unsigned char *) word->word, strlen(word->word), md);
@@ -31,20 +48,20 @@ int main() {
     // check if the hash equals the given hash
     if (strcmp(hex, hash.c_str()) == 0) {
       cout << "Success: " << word->word << " results in the given hash." << endl;
-      break;
+      stop = true;
     }
 
     // proceed with the next word
-    word->operator ++();
+    word->operator+(num_threads);
   }
-
+  }
   return 0;
 }
 
 void convert_to_hex(unsigned char *data, size_t len, char* hex) {
   char *hex_ptr = hex;
 
-  for (int i = 0; i < len; i++) {
+  for (unsigned int i = 0; i < len; i++) {
     hex_ptr += sprintf(hex_ptr, "%02x", data[i]);
   }
 }

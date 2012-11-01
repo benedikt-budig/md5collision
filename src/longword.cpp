@@ -5,6 +5,8 @@
  *      Author: bene
  */
 
+#include <stdio.h>
+
 #include "longword.hpp"
 
 using namespace std;
@@ -20,7 +22,7 @@ Longword::~Longword() {
   delete word;
 }
 
-Longword* Longword::operator ++() {
+Longword* Longword::operator++() {
   this->word[0]++;
   if (this->word[0] == '\0')
     for (int j = 1; j < this->size; j++) { // TODO: Catch last overflow!
@@ -31,8 +33,19 @@ Longword* Longword::operator ++() {
   return this;
 }
 
-Longword* Longword::operator +(int i) {
+Longword* Longword::operator+(int i) {
   for (int j = 0; j < i; j++)
     this->operator ++();
   return this;
+}
+
+string Longword::toString() {
+  string ret;
+  for (int i=0;i<size;i++) {
+    char* cint;
+    sprintf(cint, "%i ", word[i]);
+    string sint = cint;
+    ret += sint;
+  }
+  return ret;
 }
