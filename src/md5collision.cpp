@@ -16,8 +16,8 @@ void handler(int);
 int main() {
   signal(SIGSEGV, handler);
   int word_length = 10;
-  string hash = "092f2ba9f39fbc2876e64d12cd662f72";
-
+  //string hash = "092f2ba9f39fbc2876e64d12cd662f72";
+  string hash = "6887d7394c63f34fec2aac18dc953c5c";
   bool stop = false;
   Longword* word;
 
