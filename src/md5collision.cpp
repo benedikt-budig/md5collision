@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <execinfo.h>
 #include <openssl/md5.h>
-# include <omp.h>
+#include <omp.h>
 #include "longword.hpp"
 
 using namespace std;
