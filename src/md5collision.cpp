@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <execinfo.h>
 #include <openssl/md5.h>
-#include <omp.h>
+#include <mpi.h>
 #include "longword.hpp"
 
 using namespace std;
@@ -13,25 +13,28 @@ using namespace std;
 void convert_to_hex(unsigned char*, size_t, char*);
 void handler(int);
 
-int main() {
+int main(int argc, char *argv[]) {
   signal(SIGSEGV, handler);
   int word_length = 10;
-  //string hash = "092f2ba9f39fbc2876e64d12cd662f72";
-  string hash = "6887d7394c63f34fec2aac18dc953c5c";
+  string hash = "092f2ba9f39fbc2876e64d12cd662f72";
+  //string hash = "6887d7394c63f34fec2aac18dc953c5c";
   bool stop = false;
   Longword* word;
 
-  #pragma omp parallel private(word)
-  {
-  int num_threads = omp_get_num_threads();
+  MPI_Init(&argc, &argv);
+
+  int num_threads;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_threads);
   bool first = true;
   for (int i = 0; i < 10000000000000; i++) {
     if (stop)
       break;
 
     if (first) {
+      int offset;
       word = new Longword(word_length);
-      word->operator +(omp_get_thread_num());
+      MPI_Comm_rank(MPI_COMM_WORLD, &offset);
+      word->operator +(offset);
       first = false;
     }
 
@@ -49,11 +52,11 @@ int main() {
     if (strcmp(hex, hash.c_str()) == 0) {
       cout << "Success: " << word->word << " results in the given hash.,";
       stop = true;
+      MPI_Abort(MPI_COMM_WORLD, 0);
     }
 
     // proceed with the next word
     word->operator+(num_threads);
-  }
   }
   return 0;
 }
